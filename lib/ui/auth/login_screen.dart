@@ -149,6 +149,16 @@ class _LoginScreenState extends State<LoginScreen> {
                 )
               ],
             ),
+            const SizedBox(
+              height: 10,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Text("Login With Google "),
+                TextButton(onPressed: () {}, child: const Icon(Icons.login))
+              ],
+            ),
           ],
         ),
       ),
