@@ -1,9 +1,13 @@
+import 'dart:developer';
+
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebasedemo/firebase_services/authservices.dart';
 import 'package:firebasedemo/ui/auth/signup_screen.dart';
 import 'package:firebasedemo/ui/posts/post_screen.dart';
 import 'package:firebasedemo/utils/utils.dart';
 import 'package:firebasedemo/widget/round_button.dart';
 import 'package:flutter/material.dart';
+// import 'package:google_sign_in/google_sign_in.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -25,6 +29,44 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
     emailController.dispose();
     passwordController.dispose();
+  }
+
+//login with google account!.
+  Future<void> loginwithgoogle() async {
+    setState(() {
+      loading = true;
+    });
+    try {
+      UserCredential userCredential = await Authservices().loginInWithGoogle();
+      if (userCredential.user != null) {
+        // ignore: use_build_context_synchronously
+        Navigator.pushReplacement(context,
+            MaterialPageRoute(builder: (context) => const PostScreen()));
+      } else {
+        showDialog(
+            // ignore: use_build_context_synchronously
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: const Text("Error"),
+                content: const Text("Google login failed No user information"),
+                actions: [
+                  TextButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: const Text("Ok")),
+                ],
+              );
+            });
+      }
+    } catch (error) {
+      log("Error During Google Login => $error");
+    } finally {
+      setState(() {
+        loading = false;
+      });
+    }
   }
 
   void login() {
@@ -55,7 +97,26 @@ class _LoginScreenState extends State<LoginScreen> {
       }
     }).onError(
       (error, stackTrace) {
-        Utils().toastMessage(error.toString());
+        // Utils().toastMessage(error.toString());
+        showDialog(
+            // ignore: use_build_context_synchronously
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: const Text(
+                  "Error",
+                  style: TextStyle(fontSize: 50, color: Colors.red),
+                ),
+                content: const Text("Login Failed No User Information"),
+                actions: [
+                  TextButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: const Text("Ok")),
+                ],
+              );
+            });
         setState(() {
           loading = false;
         });
@@ -156,7 +217,14 @@ class _LoginScreenState extends State<LoginScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 const Text("Login With Google "),
-                TextButton(onPressed: () {}, child: const Icon(Icons.login))
+                TextButton(
+                    onPressed: () {
+                      log("Button Pressed");
+                      loading
+                          ? const CircularProgressIndicator()
+                          : loginwithgoogle();
+                    },
+                    child: const Icon(Icons.login))
               ],
             ),
           ],

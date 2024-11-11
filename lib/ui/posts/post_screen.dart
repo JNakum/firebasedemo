@@ -13,6 +13,9 @@ class PostScreen extends StatefulWidget {
 class _PostScreenState extends State<PostScreen> {
   final auth = FirebaseAuth.instance;
 
+  final uid = FirebaseAuth.instance.currentUser!.uid;
+  // final email = FirebaseAuth.instance.currentUser!.email;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -25,6 +28,7 @@ class _PostScreenState extends State<PostScreen> {
                 // Check if the widget is still mounted
                 if (mounted) {
                   Navigator.pushReplacement(
+                    // ignore: use_build_context_synchronously
                     context,
                     MaterialPageRoute(
                       builder: (context) => const LoginScreen(),
@@ -43,7 +47,20 @@ class _PostScreenState extends State<PostScreen> {
           )
         ],
       ),
-      body: Container(),
+      body: Center(
+        child: Container(
+          margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+          child: Column(
+            children: [
+              Text("Id :- $uid"),
+              const SizedBox(
+                height: 10,
+              ),
+              Text("Email :- ${auth.currentUser!.email}")
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
